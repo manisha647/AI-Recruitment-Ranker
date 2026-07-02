@@ -1,0 +1,15 @@
+# Core pipeline (required for both precompute and rank steps)
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+scipy>=1.10
+pyarrow>=14.0
+faiss-cpu>=1.7.4
+joblib>=1.3
+
+# Optional: only needed if you switch EMBEDDING_BACKEND to
+# "sentence_transformer" in utils/config.py. Not required for the default
+# tfidf_svd backend, which is what makes the whole pipeline runnable with
+# zero network access, zero GPU, out of the box.
+# sentence-transformers>=2.7
+# torch>=2.1

@@ -1,0 +1,83 @@
+# Redrob Hackathon — Submission Metadata
+# Fill in the bracketed placeholders before you upload via the portal.
+
+team_name: "[YOUR TEAM NAME]"
+
+primary_contact:
+  name: "[FULL NAME]"
+  email: "[email@example.com]"
+  phone: "[+91-XXXXXXXXXX]"
+
+team_members:
+  - name: "[Member 1 Full Name]"
+    email: "[member1@example.com]"
+    role: "ML Engineer"
+
+github_repo: "[https://github.com/YOUR_USERNAME/YOUR_REPO]"
+
+sandbox_link: "[https://huggingface.co/spaces/YOUR_USERNAME/redrob-ranker]"
+# See README.md "Sandbox setup" for what to deploy here: rank.py plus
+# artifacts/ built from a small candidate sample.
+
+reproduce_command: "python rank.py --candidates ./data/candidates.jsonl --jd ./data/jd.txt --out ./outputs/submission.csv"
+# Precompute (python precompute_all.py) must be run once beforehand -- see
+# README.md. This command alone (measured locally) completes in ~7 seconds
+# on a single CPU core, well inside the 5-minute / 16GB budget.
+
+compute:
+  platform: "[e.g. MacBook Pro M2 / AWS c5.4xlarge / Local Linux box]"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.12"
+  os: "[e.g. Ubuntu 22.04 LTS]"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: true
+  pre_computation_time_minutes: 4
+  # Actual measured time for precompute_all.py on 100,000 candidates with
+  # the default tfidf_svd backend, single CPU core, no GPU, no network.
+
+ai_tools_used:
+  - "Claude"
+  # Add "ChatGPT", "Cursor", "Copilot", etc. if used, or remove this line
+  # and replace with "None" if not applicable to your actual workflow.
+
+ai_usage_summary: |
+  Used Claude to scaffold the initial pipeline architecture (candidate
+  intelligence extraction, embedding, FAISS retrieval, hybrid ranking,
+  reasoning generation) and to review it against submission_spec.docx for
+  compute-constraint and format compliance. [Describe your own iteration,
+  tuning, and validation work here -- what you changed, what you tested,
+  what you'd defend at Stage 5.] No candidate data was sent to any hosted
+  LLM API; all ranking-step computation is local and offline.
+
+methodology_summary: |
+  Two-stage pipeline: an offline precompute step (candidate_intelligence.py
+  -> embed_candidates.py -> build_index.py) parses all 100K profiles,
+  builds a JD-agnostic embedding_text field (headline, summary, career
+  history, skills, education -- explicitly excluding behavioral signals),
+  fits a TF-IDF+SVD embedder (384-dim, offline, no GPU/network required),
+  and builds a FAISS IndexFlatIP for exact cosine retrieval. The online
+  rank.py step (~7s, CPU-only, no network) embeds the single JD, retrieves
+  the top 1000 candidates via FAISS, and re-ranks with a hybrid score:
+  semantic similarity (30%) + required/preferred skill match weighted by
+  proficiency and duration (28%) + title/career-history alignment (20%,
+  the primary defense against the "keyword-stuffer with a non-AI title"
+  trap this JD explicitly calls out) + experience-band fit (12%) +
+  location (5%) + education tier (5%), multiplied by a bounded behavioral
+  modifier (recruiter response rate, recency, notice period, availability)
+  per redrob_signals_doc.docx guidance. Candidates with internally
+  impossible profiles (expert proficiency at ~0 duration, career-history
+  duration exceeding stated total experience, overlapping "current" roles)
+  are flagged during precompute and penalized near-zero at ranking time.
+  Reasoning strings are template-composed from the same structured
+  features that drove the score (not LLM-generated), with per-candidate
+  deterministic template variation and rank-matched tone, to satisfy the
+  Stage 4 manual-review checks against hallucination and templating.
+
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
