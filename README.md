@@ -238,3 +238,5 @@ Wire whichever hosted platform you choose to run that same sequence (or
 just the `rank.py` step, if you commit the small-sample artifacts) and
 link it in `submission_metadata.yaml::sandbox_link`.
 
+colab link: https://colab.research.google.com/drive/11S5FfSmlHTUs2Olna_c7cIs2wqGOy-Vc?usp=sharing
+
