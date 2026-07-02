@@ -238,16 +238,3 @@ Wire whichever hosted platform you choose to run that same sequence (or
 just the `rank.py` step, if you commit the small-sample artifacts) and
 link it in `submission_metadata.yaml::sandbox_link`.
 
-## What's still on you before submitting
-
-This repo produces a real, validated, spec-compliant `submission.csv` for
-the released bundle — but three things in `submission_metadata.yaml` are
-placeholders you need to fill in honestly: your team's actual compute
-environment, your GitHub repo URL once you push this, and a genuine
-`ai_usage_summary` describing what you personally changed, tuned, or
-tested on top of this scaffold. The spec is explicit that Stage 4/5
-evaluators are checking for real engineering on top of AI-assisted
-scaffolding, and that a "paste-and-pray" submission fails there
-regardless of composite score — so actually read through
-`ranking/hybrid_ranker.py`'s weights and tune them against your own
-judgment of the JD before you submit, don't just run it as-is.
